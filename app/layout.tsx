@@ -1,6 +1,7 @@
 // app/layout.tsx
 import type { Metadata } from 'next';
 import { Cairo } from 'next/font/google'; // Import Cairo font
+import Script from 'next/script';
 import './globals.css';
 import { ThemeProvider } from '@/app/components/ThemeProvider';
 import { ThemeSwitcher } from './components/ThemeSwitcher';
@@ -30,6 +31,15 @@ export default function RootLayout({
           </div>
           {children}
         </ThemeProvider>
+
+        {/* --- 2. Add the AdSense Script --- */}
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUB_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
       </body>
     </html>
   );

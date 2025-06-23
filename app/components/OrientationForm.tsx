@@ -5,6 +5,7 @@ import { bacTypes, subjects, SubjectId } from '@/lib/data/bac-types';
 import { RecommendedProgram } from '@/app/api/recommend/route';
 import programsData from "@/lib/data/programs.json";
 import { motion, AnimatePresence } from 'framer-motion';
+import { AdsenseAd } from './AdsenseAd';
 import { Card } from './Card';
 import { Button } from './Button';
 import { RecommendationCard } from './RecommendationCard'; // <-- Import the new component
@@ -169,6 +170,7 @@ export default function OrientationForm() {
                   
                 </div>
               </Card>
+              
 
               {/* ... "No results" message and Masonry grid remain here ... */}
               {filteredRecommendations.length === 0 && (
@@ -180,11 +182,26 @@ export default function OrientationForm() {
               
               <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
                 <Masonry gutter="2rem">
-                  {/* --- THIS IS THE KEY FIX --- */}
-                  {/* We now map over `filteredRecommendations` instead of `recommendations` */}
-                  {filteredRecommendations.map(rec => (
-                      <RecommendationCard key={rec.code} rec={rec} />
-                  ))}
+                  {/* --- 2. NEW AD INJECTION LOGIC --- */}
+                  {filteredRecommendations.map((rec, index) => {
+                    // Inject an ad card after the 5th result, and then every 6 cards after that.
+                    const shouldShowAd = (index > 0 && (index + 1) % 6 === 0);
+
+                    return (
+                      <React.Fragment key={rec.code}>
+                        <RecommendationCard rec={rec} />
+                        
+                        {shouldShowAd && (
+                          <div className="w-full h-[300px] bg-gray-200 dark:bg-gray-700 rounded-2xl overflow-hidden">
+                            <AdsenseAd 
+                              publisherId={process.env.NEXT_PUBLIC_ADSENSE_PUB_ID!}
+                              slotId={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID!}
+                            />
+                          </div>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </Masonry>
               </ResponsiveMasonry>
               
