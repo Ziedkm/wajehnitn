@@ -23,7 +23,7 @@ export default function HomePage() {
           alt="WajehniTN Logo" 
           width={1370}
           height={515}
-          className="h-40 w-auto mx-auto mb-4"
+          className="h-auto w-auto mx-auto mb-4"
           priority
         />
 

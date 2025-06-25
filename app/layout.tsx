@@ -5,6 +5,7 @@ import Script from 'next/script';
 import './globals.css';
 import { ThemeProvider } from '@/app/components/ThemeProvider';
 import { ThemeSwitcher } from './components/ThemeSwitcher';
+import { Footer } from './components/Footer';
 
 // Configure the font
 const cairo = Cairo({ 
@@ -30,6 +31,7 @@ export default function RootLayout({
             <ThemeSwitcher />
           </div>
           {children}
+          <Footer />
         </ThemeProvider>
 
         {/* --- 2. Add the AdSense Script --- */}
