@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 
 declare global {
   interface Window {
-    adsbygoogle: any;
+    adsbygoogle: unknown[];
   }
 }
 
@@ -19,7 +19,7 @@ export function AdsenseAd({ publisherId, slotId, className = '' }: AdsenseAdProp
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("AdSense error:", err);
     }
   }, []);

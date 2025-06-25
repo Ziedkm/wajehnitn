@@ -69,8 +69,12 @@ export default function OrientationForm() {
       if (!response.ok) throw new Error('حدث خطأ أثناء جلب النتائج. يرجى التأكد من إدخال جميع المعدلات بشكل صحيح.');
       const data: RecommendedProgram[] = await response.json();
       setRecommendations(data);
-    } catch (err: any) {
-      setError(err.message);
+    }  catch (err: unknown) { // Use 'unknown' instead of 'any'
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
