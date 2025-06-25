@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://i.ibb.co/PzZftv93/wajehnitn-logo.png" alt="WajehniTN Logo" width="250"/>
+  <img src="https://i.ibb.co/k6gWMs9k/wajehnitn-logo.png" alt="WajehniTN Logo" width="250"/>
   <h1>WajehniTN | دليلك للتوجيه الجامعي</h1>
   <p>
     An intuitive and visually appealing web application designed to help Tunisian Baccalaureate students discover their university orientation options by calculating their specific scores and recommending majors.
