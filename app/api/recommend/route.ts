@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { bacTypes, SubjectId } from "@/lib/data/bac-types";
 import programsData from "@/lib/data/programs.json";
 
-// The types are all correct.
 export interface RecommendedProgram {
   code: string;
   major_ar: string;
@@ -14,7 +13,6 @@ export interface RecommendedProgram {
   student_score: number;
 }
 
-// Helper functions are also correct.
 const normalizeScores = (bacType: string, originalScores: Partial<Record<SubjectId, number>>): Partial<Record<SubjectId, number>> => {
   const normalized = { ...originalScores };
   if (bacType === 'info' && normalized.algo) {
@@ -40,8 +38,6 @@ const calculateModifierValue = (modifierKey: string, scores: Partial<Record<Subj
   return value;
 };
 
-
-// Main API Handler
 export async function POST(req: NextRequest) {
   try {
     const { bacType, scores } = await req.json();
@@ -72,12 +68,13 @@ export async function POST(req: NextRequest) {
 
     const recommendations: RecommendedProgram[] = [];
 
-    // --- THIS IS THE FIX ---
-    // We cast `programsData` to `any` to tell TypeScript to trust the data's structure,
-    // even if it's inconsistent, because our runtime logic can handle it.
+    // Tell ESLint to ignore the 'any' type for the next line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const typedProgramsData: any[] = programsData;
 
     typedProgramsData.forEach(program => {
+      // Tell ESLint to ignore the 'any' type for the next line
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const requirement = program.requirements.find((r: any) => r.bac_type === bacType);
 
       if (requirement && requirement.min_score_2024 !== null) {
