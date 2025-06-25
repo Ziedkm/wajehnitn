@@ -3,6 +3,7 @@ import { bacTypes, SubjectId } from "@/lib/data/bac-types";
 import programsData from "@/lib/data/programs.json";
 
 // --- Type Definitions ---
+// CORRECTED: This type is now more flexible and correctly describes our data.
 type FormulaModifier = { [key: string]: number };
 
 interface ProgramData {
@@ -35,7 +36,7 @@ export interface RecommendedProgram {
   student_score: number;
 }
 
-// --- Helper Functions ---
+// Helper functions remain unchanged
 const normalizeScores = (bacType: string, originalScores: Partial<Record<SubjectId, number>>): Partial<Record<SubjectId, number>> => {
   const normalized = { ...originalScores };
   if (bacType === 'info' && normalized.algo) {
@@ -62,7 +63,7 @@ const calculateModifierValue = (modifierKey: string, scores: Partial<Record<Subj
 };
 
 
-// --- Main API Handler ---
+// Main API Handler remains unchanged
 export async function POST(req: NextRequest) {
   try {
     const body: RequestData = await req.json();
