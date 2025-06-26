@@ -10,7 +10,7 @@ import { Button } from './Button';
 import { RecommendationCard } from './RecommendationCard';
 import { AdsenseAd } from './AdsenseAd';
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import Tesseract from 'tesseract.js';
+
 
 const uniqueFields = ['الكل', ...new Set(programsData.map(p => p.field_ar))];
 const uniqueCampuses = ['الكل', ...new Set(programsData.map(p => p.campus_ar))];
@@ -112,8 +112,11 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
         setScores(extractedData);
         setAiProgress(100);
 
-    } catch (err: any) {
-        setError(err.message || "حدث خطأ غير متوقع.");
+    } catch (err) {
+        console.error(err);
+        // Check if the error is an instance of the Error class
+        const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";
+        setError(errorMessage);
         setAiProgress(0);
     } finally {
         setTimeout(() => setIsAiProcessing(false), 800);

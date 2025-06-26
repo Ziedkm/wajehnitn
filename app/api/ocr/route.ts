@@ -45,12 +45,12 @@ export async function POST(req: NextRequest) {
     // If we get here, it means text was found successfully.
     return NextResponse.json({ text }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("--- FULL OCR API CATCH BLOCK ---");
     console.error(error);
     console.error("--------------------------------");
     
-    const errorMessage = error.message || "An unknown error occurred on the server.";
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return NextResponse.json(
         { error: `Server Error: ${errorMessage}` }, 
         { status: 500 }
