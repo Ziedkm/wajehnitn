@@ -4,7 +4,7 @@
 export type SubjectId =
   | "mg" | "math" | "sp" | "svt" | "ph" | "hg" | "a" | "f" | "ang"
   | "ec" | "ge" | "te" | "info" | "algo" | "sti" | "sb" | "ep"
-  | "sp_sport" | "all" | "it" | "esp" | "edph" | "edar";
+  | "sp_sport" | "all" | "it" | "esp" | "edph" | "edar" | "art";
 
 // The Subject interface is correct.
 export interface Subject {
@@ -38,6 +38,7 @@ export const subjects: Record<SubjectId, Subject> = {
   all: { id: "all", name_ar: "ألمانية", name_fr: "Allemand" },
   it: { id: "it", name_ar: "إيطالية", name_fr: "Italien" },
   esp: { id: "esp", name_ar: "اسبانية", name_fr: "Espagnol" },
+  art:{ id: "art", name_ar: "تشكيلبة", name_fr: "Artistique" },
 };
 
 // The Baccalaureate interface is correct.
@@ -98,7 +99,7 @@ export const bacTypes: Baccalaureate[] = [
     id: "sports",
     name_ar: "رياضة",
     name_fr: "Sport",
-    required_subjects: ["mg", "sp_sport", "sb", "ep", "sp", "ph", "f", "ang", "edph", "edar"],
+    required_subjects: ["mg", "sp_sport", "sb", "ep", "sp", "ph", "f", "ang", "a", "edar"],
     fg_formula: { mg: 4, sb: 1.5, sp_sport: 1, ep: 0.5, sp: 0.5, ph: 0.5, f: 1, ang: 1 },
   },
 ];

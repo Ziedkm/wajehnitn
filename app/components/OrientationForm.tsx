@@ -13,7 +13,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const uniqueFields = ['الكل', ...new Set(programsData.map(p => p.field_ar))];
 const uniqueCampuses = ['الكل', ...new Set(programsData.map(p => p.campus_ar))];
-const optionalLanguages: SubjectId[] = ['all', 'it', 'esp'];
+const optionalLanguages: SubjectId[] = ['all', 'it', 'esp','art'];
 
 export default function OrientationForm() {
   const [selectedBacId, setSelectedBacId] = useState<string>('');
@@ -148,7 +148,7 @@ export default function OrientationForm() {
                 </div>
                 <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <AnimatePresence>{addedOptionalSubjects.map(subjectId => (<motion.div key={subjectId} initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="flex items-end space-x-2 space-x-reverse"><div className="flex-grow"><label htmlFor={subjectId} className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-right">{subjects[subjectId]?.name_ar}</label><input type="number" id={subjectId} name={subjectId} min="0" max="20" step="0.01" required onChange={(e) => handleScoreChange(subjectId, e.target.value)} className="mt-2 block w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center" placeholder="0.00" /></div><button type="button" onClick={() => removeOptionalSubject(subjectId)} className="p-2 h-10 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg></button></motion.div>))}</AnimatePresence>
-                  {availableOptionalLanguages.length > 0 && (<select onChange={(e) => addOptionalSubject(e.target.value as SubjectId)} value="" className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl text-right"><option value="" disabled>-- إضافة لغة اختيارية --</option>{availableOptionalLanguages.map(langId => <option key={langId} value={langId}>{subjects[langId].name_ar}</option>)}</select>)}
+                  {availableOptionalLanguages.length > 0 && (<select onChange={(e) => addOptionalSubject(e.target.value as SubjectId)} value="" className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl text-right"><option value="" disabled>-- إضافة مادة اختيارية --</option>{availableOptionalLanguages.map(langId => <option key={langId} value={langId}>{subjects[langId].name_ar}</option>)}</select>)}
                 </div>
               </motion.div>
             )}
