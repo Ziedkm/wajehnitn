@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { bacTypes, subjects, SubjectId } from '@/lib/data/bac-types';
 import { RecommendedProgram } from '@/app/api/recommend/route';
 import programsData from "@/lib/data/programs.json";
@@ -10,10 +10,31 @@ import { Button } from './Button';
 import { RecommendationCard } from './RecommendationCard';
 import { AdsenseAd } from './AdsenseAd';
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import Tesseract from 'tesseract.js';
 
 const uniqueFields = ['الكل', ...new Set(programsData.map(p => p.field_ar))];
 const uniqueCampuses = ['الكل', ...new Set(programsData.map(p => p.campus_ar))];
 const optionalLanguages: SubjectId[] = ['all', 'it', 'esp','art'];
+const smsAbbreviationMap: Record<string, SubjectId> = {
+  moye: 'mg',
+  eco: 'ec',
+  gest: 'ge',
+  math: 'math',
+  hgeo: 'hg',
+  angl: 'ang',
+  fran: 'f',
+  arab: 'a',
+  phil: 'ph',
+  info: 'info',
+  edph: 'edph',
+  edar: 'edar',
+  svt: 'svt',
+  sp: 'sp',
+  te: 'te',
+  algo: 'algo',
+  sti: 'sti',
+  sport: 'sp_sport'
+};
 
 export default function OrientationForm() {
   const [selectedBacId, setSelectedBacId] = useState<string>('');
@@ -26,18 +47,108 @@ export default function OrientationForm() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedField, setSelectedField] = useState<string>('الكل');
   const [selectedCampus, setSelectedCampus] = useState<string>('الكل');
+  const [isAiProcessing, setIsAiProcessing] = useState<boolean>(false);
+  const [aiProgress, setAiProgress] = useState(0);
+
+const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsAiProcessing(true);
+    setError(null);
+    setAiProgress(10); 
+
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+        setAiProgress(30); 
+
+        const response = await fetch('/api/ocr', { method: 'POST', body: formData });
+        setAiProgress(70);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "فشل الخادم في معالجة الصورة.");
+        }
+        
+        const { text } = await response.json();
+        setAiProgress(90);
+
+        const cleanedText = text.replace(/(\r\n|\n|\r)/gm, " ").trim();
+        const regex = /([a-zA-Z]+)\s*=\s*(\d{1,2}(?:[\.,]\d{1,2})?)/g;
+        let match;
+        const extractedData: { [key: string]: number } = {};
+        while ((match = regex.exec(cleanedText)) !== null) {
+            const key = match[1].toLowerCase();
+            const value = parseFloat(match[2].replace(',', '.'));
+            if (smsAbbreviationMap[key] && !isNaN(value)) {
+                extractedData[smsAbbreviationMap[key]] = value;
+            }
+        }
+
+        if (Object.keys(extractedData).length === 0) {
+            throw new Error("لم نتمكن من قراءة أي معدلات من الصورة.");
+        }
+        
+        const foundSubjects = Object.keys(extractedData) as SubjectId[];
+        let detectedBacId = '';
+        if (foundSubjects.includes('ec') && foundSubjects.includes('ge')) { detectedBacId = 'eco'; } 
+        else if (foundSubjects.includes('svt')) { detectedBacId = 'sciences_exp'; } 
+        else if (foundSubjects.includes('te')) { detectedBacId = 'sciences_tech'; } 
+        else if (foundSubjects.includes('algo')) { detectedBacId = 'info'; } 
+        else if (foundSubjects.includes('sp_sport')) { detectedBacId = 'sports'; } 
+        else if (foundSubjects.includes('ph') && foundSubjects.includes('hg')) { detectedBacId = 'lettres'; } 
+        else if (foundSubjects.includes('math') && foundSubjects.includes('sp')) { detectedBacId = 'math'; }
+
+        // --- THE KEY FIX ---
+        // 1. Set the Bac ID first.
+        if (detectedBacId) {
+            setSelectedBacId(detectedBacId);
+        } else {
+            setError("لم نتمكن من تحديد الشعبة. يرجى اختيارها يدويًا.");
+        }
+
+        // 2. Then set the scores. The useEffect will handle updating the inputs.
+        setScores(extractedData);
+        setAiProgress(100);
+
+    } catch (err: any) {
+        setError(err.message || "حدث خطأ غير متوقع.");
+        setAiProgress(0);
+    } finally {
+        setTimeout(() => setIsAiProcessing(false), 800);
+    }
+  };
+
+  // --- NEW useEffect TO POPULATE SCORES AFTER BAC TYPE IS SET ---
+  useEffect(() => {
+    // This effect runs whenever the `scores` state is updated by the AI.
+    // It populates the input fields with the new values.
+    const scoreKeys = Object.keys(scores);
+    if (scoreKeys.length > 0) {
+      scoreKeys.forEach(key => {
+        const input = document.getElementById(key) as HTMLInputElement;
+        if (input) {
+          input.value = String(scores[key as SubjectId] || '');
+        }
+      });
+    }
+  }, [scores]); // Dependency array: this effect runs only when `scores` changes.
 
   const handleBacTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedBacId(e.target.value);
+    // ... (This function is now simpler and correct)
+    const newBacId = e.target.value;
+    setSelectedBacId(newBacId);
     setScores({});
     setAddedOptionalSubjects([]);
-    setRecommendations([]);
+    setRecommendations([]); 
     setError(null);
   };
 
   const handleScoreChange = (subjectId: SubjectId, value: string) => {
     setScores(prev => ({ ...prev, [subjectId]: parseFloat(value) || 0 }));
   };
+
 
   const addOptionalSubject = (subjectId: SubjectId) => {
     if (subjectId && !addedOptionalSubjects.includes(subjectId)) {
@@ -122,18 +233,70 @@ export default function OrientationForm() {
 
   return (
     <div className="w-full">
+    
+
+    {/* --- NEW: AI PROGRESS BAR --- */}
+        <AnimatePresence>
+            {isAiProcessing && (
+                <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-4"
+                >
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                        <div 
+                            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                            style={{ width: `${aiProgress * 100}%`, maxWidth: '100%' }} 
+                        ></div>
+                    </div>
+                    <p className="text-center text-sm text-gray-500 mt-2">...جاري قراءة النص من الصورة</p>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
       <Card>
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">أدخل معلوماتك</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
+              
               <label htmlFor="bacType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-right mb-2">شعبة البكالوريا</label>
               <select id="bacType" value={selectedBacId} onChange={handleBacTypeChange} required className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl text-right">
                 <option value="" disabled>-- اختر شعبتك --</option>
                 {bacTypes.map(bac => <option key={bac.id} value={bac.id}>{bac.name_ar}</option>)}
               </select>
+              
             </div>
             {/* Field of interest moved to the filter bar below */}
+            {/* --- NEW: AI SCAN BUTTON --- */}
+    <div className="mt-6">
+        <label
+            htmlFor="image-upload"
+            className="relative w-full max-w-md mx-auto flex items-center justify-center px-6 py-3 rounded-xl text-lg font-bold text-white cursor-pointer shadow-lg overflow-hidden group"
+        >
+            {/* The Moving Gradient Background */}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 via-white/70 to-cyan-500 animate-gradient-x group-hover:scale-110 transition-transform duration-300"></span>
+
+            {/* The Content (Icon and Text) */}
+            <span className="relative flex items-center space-x-2 space-x-reverse">
+                {/* AI Icon */}
+                <svg className="w-[30px] h-[30px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"/>
+</svg>
+
+                <span>{isAiProcessing ? '...جاري التحليل' : 'تحليل صورة المعدلات'}</span>
+            </span>
+        </label>
+        <input 
+            id="image-upload" 
+            type="file" 
+            className="hidden" 
+            accept="image/*"
+            onChange={handleImageUpload}
+            disabled={isAiProcessing}
+        />
+    </div>
           </div>
           <AnimatePresence>
             {selectedBac && (

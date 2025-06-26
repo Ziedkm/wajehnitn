@@ -38,7 +38,7 @@ export const subjects: Record<SubjectId, Subject> = {
   all: { id: "all", name_ar: "ألمانية", name_fr: "Allemand" },
   it: { id: "it", name_ar: "إيطالية", name_fr: "Italien" },
   esp: { id: "esp", name_ar: "اسبانية", name_fr: "Espagnol" },
-  art:{ id: "art", name_ar: "تشكيلبة", name_fr: "Artistique" },
+  art:{ id: "art", name_ar: "تشكيلية", name_fr: "Artistique" },
 };
 
 // The Baccalaureate interface is correct.
