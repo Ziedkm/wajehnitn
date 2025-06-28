@@ -57,7 +57,7 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         {/* --- PASTE THE GOOGLE VERIFICATION TAG HERE --- */}
-        <meta name="google-site-verification" content="YOUR_UNIQUE_CODE_HERE" />
+        <meta name="google-site-verification" content="pnj0VJaUB3lwhCx97o7CRcFURZy87XzOQWhgTNmcsOs" />
       </head>
       <body className={cairo.className}> {/* Apply font to the entire app */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
