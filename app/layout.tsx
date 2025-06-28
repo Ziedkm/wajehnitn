@@ -16,7 +16,37 @@ const cairo = Cairo({
 export const metadata: Metadata = {
   title: 'WajehniTN - دليلك للتوجيه الجامعي',
   description: 'أدخل معدلاتك في البكالوريا واكتشف أفضل شعب التوجيه الجامعي لك في تونس',
+  // --- NEW: Add SEO Keywords and Metadata ---
+  keywords: [
+    'Tawjih', 'Orientation TN', 'Bac Tunisie', 'Score Bac', 'Wajehni',
+    'توجيه جامعي', 'بكالوريا تونس', 'حساب سكور الباك', 'دليل التوجيه', 'وجهني'
+  ],
+  authors: [{ name: 'Your Name' }], // Replace with your name or company
+  creator: 'Your Name',
+  publisher: 'Your Name',
+  openGraph: {
+    title: 'WajehniTN | دليلك للتوجيه الجامعي',
+    description: 'أدخل معدلاتك واكتشف مستقبلك الأكاديمي بثقة وسهولة.',
+    url: 'https://wajehnitn-app.vercel.app', // IMPORTANT: Replace with your live domain
+    siteName: 'WajehniTN',
+    images: [
+      {
+        url: 'https://wajehnitn-app.vercel.app/og-image.png', // We will create this image
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'ar_TN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'WajehniTN | دليلك للتوجيه الجامعي',
+    description: 'أدخل معدلاتك في البكالوريا واكتشف أفضل شعب التوجيه الجامعي لك في تونس.',
+    images: ['https://wajehnitn-app.vercel.app/og-image.png'], // We will create this image
+  },
 };
+
 
 export default function RootLayout({
   children,
@@ -25,6 +55,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <head>
+        {/* --- PASTE THE GOOGLE VERIFICATION TAG HERE --- */}
+        <meta name="google-site-verification" content="YOUR_UNIQUE_CODE_HERE" />
+      </head>
       <body className={cairo.className}> {/* Apply font to the entire app */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="absolute top-4 right-4 z-10">
