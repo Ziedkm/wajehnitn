@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     'Tawjih', 'Orientation TN', 'Bac Tunisie', 'Score Bac', 'Wajehni',
     'توجيه جامعي', 'بكالوريا تونس', 'حساب سكور الباك', 'دليل التوجيه', 'وجهني'
   ],
-  authors: [{ name: 'Your Name' }], // Replace with your name or company
-  creator: 'Your Name',
-  publisher: 'Your Name',
+  authors: [{ name: 'Zied kmanter' }], 
+  creator: 'Zied kmanter',
+  publisher: 'Zied kmanter',
   openGraph: {
     title: 'WajehniTN | دليلك للتوجيه الجامعي',
     description: 'أدخل معدلاتك واكتشف مستقبلك الأكاديمي بثقة وسهولة.',
